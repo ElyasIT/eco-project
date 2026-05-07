@@ -276,8 +276,13 @@ public class ControllerImplementation implements IController, ActionListener {
     public void handleDeletePerson() {
         if (delete != null) {
             Person p = new Person(delete.getNif().getText());
-            delete(p);
-            delete.getReset().doClick();
+            int result = JOptionPane.showConfirmDialog(delete, "Are you sure you want to delete this person?", "Delete - People v1.1.0", JOptionPane.OK_CANCEL_OPTION);
+            if (result == 0) {
+                delete(p);
+                JOptionPane.showMessageDialog(delete, "Person deleted successfully!", "Delete - People v1.1.0", JOptionPane.INFORMATION_MESSAGE);
+                delete.getReset().doClick();
+            }
+
         }
     }
 
@@ -360,21 +365,21 @@ public class ControllerImplementation implements IController, ActionListener {
         Object[] options = {"Yes", "No"};
         //int answer = JOptionPane.showConfirmDialog(menu, "Are you sure to delete all people registered?", "Delete All - People v1.1.0", 0, 0);
         int answer = JOptionPane.showOptionDialog(
-        menu,
-        "Are you sure you want to delete all registered people?", 
-        "Delete All - People v1.1.0",
-        JOptionPane.YES_NO_OPTION,
-        JOptionPane.WARNING_MESSAGE,
-        null,
-        options,
-        options[1] // Default selection is "No"
-    );
+                menu,
+                "Are you sure you want to delete all registered people?",
+                "Delete All - People v1.1.0",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                options[1] // Default selection is "No"
+        );
 
         if (answer == 0) {
             deleteAll();
         }
     }
-    
+
     /**
      * This function inserts the Person object with the requested NIF, if it
      * doesn't exist. If there is any access problem with the storage device,
