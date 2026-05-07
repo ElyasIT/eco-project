@@ -20,4 +20,5 @@ public class Constants {
     public static final String STORAGE_SQL_DATABASE = "SQL - Database";
     public static final String STORAGE_JPA_DATABASE = "JPA - Database";
 
+    public static final String MSG_UPDATE_SUCCESS = "Person updated successfully!";
 }
