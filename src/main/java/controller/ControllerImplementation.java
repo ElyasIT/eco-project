@@ -331,6 +331,7 @@ public class ControllerImplementation implements IController, ActionListener {
                 p.setPhoto((ImageIcon) update.getPhoto().getIcon());
             }
             update(p);
+            JOptionPane.showMessageDialog(update, Constants.MSG_UPDATE_SUCCESS, update.getTitle(), JOptionPane.INFORMATION_MESSAGE);
             update.getReset().doClick();
         }
     }
