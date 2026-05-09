@@ -78,7 +78,7 @@ public class DAOSQL implements IDAO {
     }
 
     @Override
-    public ArrayList<Person> readAll() throws SQLException{
+    public ArrayList<Person> readAll() throws SQLException {
         ArrayList<Person> people = new ArrayList<>();
         Connection conn;
         Statement instruction;
@@ -213,8 +213,23 @@ public class DAOSQL implements IDAO {
         instruction.close();
         disconnect(conn);
         File file = new File(Routes.DB.getFolderPhotos() + File.separator);
-        for(File f : file.listFiles())
+        for (File f : file.listFiles()) {
             f.delete();
+        }
     }
 
+    @Override
+    public int count() throws SQLException {
+        int total = 0;
+        Connection conn = connect();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + Routes.DB.getDbServerDB() + "." + Routes.DB.getDbServerTABLE());
+        if (rs.next()) {
+            total = rs.getInt(1);
+        }
+        rs.close();
+        stmt.close();
+        disconnect(conn);
+        return total;
+    }
 }
