@@ -17,25 +17,25 @@ public class DAOHashMap implements IDAO {
     HashMap<String, Person> people = new HashMap();
 
     @Override
-    public Person read(Person p){
+    public Person read(Person p) {
         return people.containsKey(p.getNif()) ? people.get(p.getNif()) : null;
     }
-    
+
     @Override
     public void insert(Person p) {
         people.put(p.getNif(), p);
     }
-    
+
     @Override
-    public void delete(Person p){
+    public void delete(Person p) {
         people.remove(p.getNif());
     }
-    
+
     @Override
-    public void deleteAll(){
+    public void deleteAll() {
         people.clear();
     }
-    
+
     @Override
     public void update(Person p) {
         people.replace(p.getNif(), p);
@@ -46,4 +46,8 @@ public class DAOHashMap implements IDAO {
         return new ArrayList<>(people.values());
     }
 
+    @Override
+    public int count() {
+        return people.size();
+    }
 }
