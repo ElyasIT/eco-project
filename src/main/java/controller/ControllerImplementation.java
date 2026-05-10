@@ -20,6 +20,7 @@ import view.Update;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -28,13 +29,21 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.persistence.*;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import static javax.swing.JFileChooser.APPROVE_OPTION;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import org.jdatepicker.DateModel;
 import utils.Constants;
@@ -117,6 +126,8 @@ public class ControllerImplementation implements IController, ActionListener {
             handleDeleteAll();
         } else if (e.getSource() == menu.getCount()) {
             handleCount();
+        } else if (readAll != null && e.getSource() == readAll.getExportData()) {
+            handleExportData();
         }
     }
 
@@ -363,6 +374,7 @@ public class ControllerImplementation implements IController, ActionListener {
                     model.setValueAt("no", i, 3);
                 }
             }
+            readAll.getExportData().addActionListener(this);
             readAll.setVisible(true);
         }
     }
@@ -391,6 +403,45 @@ public class ControllerImplementation implements IController, ActionListener {
         count = new Count(menu, true);
         count.getResult().setText(String.valueOf(this.count()));
         count.setVisible(true);
+    }
+
+    private void handleExportData() {
+        String curDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String fileName = "people_data_" + curDate + ".csv";
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setSelectedFile(new File(fileName));
+        fileChooser.setFileFilter(new FileNameExtensionFilter("CSV files", "csv"));
+
+        if (fileChooser.showSaveDialog(readAll) == APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            if (!file.getName().endsWith(".csv")) {
+                file = new File(file.getAbsolutePath() + ".csv");
+            }
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                DefaultTableModel model = (DefaultTableModel) readAll.getTable().getModel();
+                for (int col = 0; col < model.getColumnCount(); col++) {
+                    bw.write(model.getColumnName(col));
+                    if (col < model.getColumnCount() - 1) {
+                        bw.write(",");
+                    }
+                }
+                bw.newLine();
+                for (int row = 0; row < model.getRowCount(); row++) {
+                    for (int col = 0; col < model.getColumnCount(); col++) {
+                        Object value = model.getValueAt(row, col);
+                        bw.write(value != null ? value.toString() : "");
+                        if (col < model.getColumnCount() - 1) {
+                            bw.write(",");
+                        }
+                    }
+                    bw.newLine();
+                }
+                showMessageDialog(readAll, "Data exported successfully as " + file.getName(), "Export - People v1.1.0", INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                showMessageDialog(readAll, "Error exporting data: " + ex.getMessage(), "Export - People v1.1.0", ERROR_MESSAGE);
+            }
+        }
     }
 
     /**
