@@ -42,12 +42,15 @@ import static javax.swing.JFileChooser.APPROVE_OPTION;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import org.jdatepicker.DateModel;
 import utils.Constants;
+import utils.UserDAO;
 import view.Count;
+import view.Login;
 
 /**
  * This class starts the visual part of the application and programs and manages
@@ -70,6 +73,7 @@ public class ControllerImplementation implements IController, ActionListener {
     private Update update;
     private ReadAll readAll;
     private Count count;
+    private Login login;
 
     /**
      * This constructor allows the controller to know which data storage option
@@ -102,6 +106,11 @@ public class ControllerImplementation implements IController, ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == dSS.getAccept()[0]) {
             handleDataStorageSelection();
+        } else if (login != null && e.getSource() == login.getLoginButton()) {
+            handleLogin();
+        } else if (login != null && e.getSource() == login.getResetButton()) {
+            login.getUsernameField().setText("");
+            login.getPasswordField().setText("");
         } else if (e.getSource() == menu.getInsert()) {
             handleInsertAction();
         } else if (insert != null && e.getSource() == insert.getInsert()) {
@@ -128,7 +137,7 @@ public class ControllerImplementation implements IController, ActionListener {
             handleCount();
         } else if (readAll != null && e.getSource() == readAll.getExportData()) {
             handleExportData();
-        }
+        } 
     }
 
     private void handleDataStorageSelection() {
@@ -154,7 +163,8 @@ public class ControllerImplementation implements IController, ActionListener {
                 setupJPADatabase();
                 break;
         }
-        setupMenu();
+//        setupMenu();
+        setupLogin();
     }
 
     private void setupFileStorage() {
@@ -441,6 +451,30 @@ public class ControllerImplementation implements IController, ActionListener {
             } catch (IOException ex) {
                 showMessageDialog(readAll, "Error exporting data: " + ex.getMessage(), "Export - People v1.1.0", ERROR_MESSAGE);
             }
+        }
+    }
+
+    private void setupLogin() {
+        login = new Login();
+        login.getLoginButton().addActionListener(this);
+        login.getResetButton().addActionListener(this);
+        login.setVisible(true);
+    }
+
+    private void handleLogin() {
+        String username = login.getUsernameField().getText();
+        String password = new String(login.getPasswordField().getPassword());
+        if (password.length() < 8) {
+            showMessageDialog(login, "Password must be at least 8 characters", "Login - People v1.1.0", WARNING_MESSAGE);
+            return;
+        }
+        if (UserDAO.validate(username, password)) {
+            showMessageDialog(login, "Login successful", "Login - People v1.1.0", INFORMATION_MESSAGE);
+            login.dispose();
+            setupMenu();
+        } else {
+            showMessageDialog(login, "Invalid username or password", "Login - People v1.1.0", ERROR_MESSAGE);
+            login.getPasswordField().setText("");
         }
     }
 
