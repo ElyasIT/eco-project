@@ -43,7 +43,6 @@ import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import org.jdatepicker.DateModel;
@@ -433,27 +432,29 @@ public class ControllerImplementation implements IController, ActionListener {
                 file = new File(file.getAbsolutePath() + ".csv");
             }
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                bw.write("sep=;");
+                bw.newLine();
                 DefaultTableModel model = (DefaultTableModel) readAll.getTable().getModel();
-                for (int col = 0; col < model.getColumnCount(); col++) {
-                    bw.write(model.getColumnName(col));
-                    if (col < model.getColumnCount() - 1) {
-                        bw.write(",");
+                for (int i = 0; i < model.getColumnCount(); i++) {
+                    bw.write(model.getColumnName(i));
+                    if (i < model.getColumnCount() - 1) {
+                        bw.write(";");
                     }
                 }
                 bw.newLine();
-                for (int row = 0; row < model.getRowCount(); row++) {
-                    for (int col = 0; col < model.getColumnCount(); col++) {
-                        Object value = model.getValueAt(row, col);
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    for (int j = 0; j < model.getColumnCount(); j++) {
+                        Object value = model.getValueAt(i, j);
                         bw.write(value != null ? value.toString() : "");
-                        if (col < model.getColumnCount() - 1) {
-                            bw.write(",");
+                        if (j < model.getColumnCount() - 1) {
+                            bw.write(";");
                         }
                     }
                     bw.newLine();
                 }
-                showMessageDialog(readAll, "Data exported successfully as " + file.getName(), "Export - People v1.1.0", INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(readAll, "Data exported successfully as " + file.getName(), "Export - People v1.1.0", INFORMATION_MESSAGE);
             } catch (IOException ex) {
-                showMessageDialog(readAll, "Error exporting data: " + ex.getMessage(), "Export - People v1.1.0", ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(readAll, "Error exporting data: " + ex.getMessage(), "Export - People v1.1.0", ERROR_MESSAGE);
             }
         }
     }
@@ -469,15 +470,15 @@ public class ControllerImplementation implements IController, ActionListener {
         String username = login.getUsernameField().getText();
         String password = new String(login.getPasswordField().getPassword());
         if (password.length() < 8) {
-            showMessageDialog(login, "Password must be at least 8 characters", "Login - People v1.1.0", WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(login, "Password must be at least 8 characters", "Login - People v1.1.0", WARNING_MESSAGE);
             return;
         }
         if (UserDAO.validate(username, password)) {
-            showMessageDialog(login, "Login successful", "Login - People v1.1.0", INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(login, "Login successful", "Login - People v1.1.0", INFORMATION_MESSAGE);
             login.dispose();
             setupMenu();
         } else {
-            showMessageDialog(login, "Invalid username or password", "Login - People v1.1.0", ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(login, "Invalid username or password", "Login - People v1.1.0", ERROR_MESSAGE);
             login.getPasswordField().setText("");
         }
     }
