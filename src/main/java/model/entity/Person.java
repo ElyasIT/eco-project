@@ -24,6 +24,7 @@ public class Person implements Serializable {
     private String name;
     private String email;
     private Date dateOfBirth;
+    private String phoneNumber;
     @Transient
     private ImageIcon photo;
     @Lob
@@ -48,10 +49,13 @@ public class Person implements Serializable {
      * @author Fran Perez
      * @version 1.0
      */
-    public Person(String name, String nif, String email) {
+    public Person(String name, String nif, String email, String phoneNumber) {
+        //TODO add phone number
         this.name = name;
         this.nif = nif;
         this.email = email;
+        this.phoneNumber = phoneNumber;
+        
     }
 
     /**
@@ -64,10 +68,11 @@ public class Person implements Serializable {
      * @param dateOfBirth
      * @param photo
      */
-    public Person(String name, String nif, String email, Date dateOfBirth, ImageIcon photo) {
+    public Person(String name, String nif, String email, String phonNumber, Date dateOfBirth, ImageIcon photo) {
         this.name = name;
         this.nif = nif;
         this.email = email;
+        this.phoneNumber = phoneNumber;
         this.dateOfBirth = dateOfBirth;
         this.photo = photo;
 
@@ -97,6 +102,15 @@ public class Person implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+       public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
 
     public Date getDateOfBirth() {
         return dateOfBirth;
@@ -106,6 +120,7 @@ public class Person implements Serializable {
         this.dateOfBirth = dateOfBirth;
     }
 
+ 
     public ImageIcon getPhoto() {
         return photo;
     }
