@@ -12,7 +12,7 @@ import model.entity.User;
  *
  * @author zyin2
  */
-public class UserDAO {
+public class UserDAO implements IUserDAO{
 
     private static final Map<String, String[]> USERS = new HashMap<>();
 
@@ -22,6 +22,7 @@ public class UserDAO {
 
     }
 
+    @Override
     public boolean validate(String username, String password) {
         if (username == null || username.isEmpty()) {
             return false;
@@ -32,6 +33,7 @@ public class UserDAO {
         return USERS.containsKey(username) && USERS.get(username)[0].equals(password);
     }
 
+    @Override
     public boolean isAdmin(String username) {
         return USERS.containsKey(username) && USERS.get(username)[1].equals("ADMIN");
     }
