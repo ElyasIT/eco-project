@@ -45,9 +45,10 @@ import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import model.dao.IUserDAO;
 import org.jdatepicker.DateModel;
 import utils.Constants;
-import utils.UserDAO;
+import model.dao.UserDAO;
 import view.Count;
 import view.Login;
 
@@ -73,6 +74,7 @@ public class ControllerImplementation implements IController, ActionListener {
     private ReadAll readAll;
     private Count count;
     private Login login;
+    private final UserDAO userDAO = new UserDAO();
 
     /**
      * This constructor allows the controller to know which data storage option
@@ -237,6 +239,15 @@ public class ControllerImplementation implements IController, ActionListener {
     private void setupMenu() {
         menu = new Menu();
         menu.setVisible(true);
+
+        if (!userDAO.isAdmin(login.getUsernameField().getText())) {
+            menu.getDeleteAll().setVisible(false);
+            menu.getDelete().setVisible(false);
+            menu.getInsert().setVisible(false);
+            menu.getUpdate().setVisible(false);
+
+        }
+
         menu.getInsert().addActionListener(this);
         menu.getRead().addActionListener(this);
         menu.getUpdate().addActionListener(this);
@@ -476,13 +487,14 @@ public class ControllerImplementation implements IController, ActionListener {
     }
 
     private void handleLogin() {
+
         String username = login.getUsernameField().getText();
         String password = new String(login.getPasswordField().getPassword());
         if (password.length() < 8) {
             JOptionPane.showMessageDialog(login, "Password must be at least 8 characters", "Login - People v1.1.0", WARNING_MESSAGE);
             return;
         }
-        if (UserDAO.validate(username, password)) {
+        if (userDAO.validate(username, password)) {
             JOptionPane.showMessageDialog(login, "Login successful", "Login - People v1.1.0", INFORMATION_MESSAGE);
             login.dispose();
             setupMenu();
